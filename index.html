@@ -1,18 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="js/jquery-3.6.0.min.js"></script>
     <meta charset="UTF-8">
     <title>jQuery</title>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/clock-service.js"></script>
 </head>
 <body>
-    <button type="button">Button</button>
+    <div id='clock'></div>
+    <button type="button" id="start-pause" onclick="onClickStartPause()">Start</button>
+    <button type="button" id="reset" onclick="resetClock()">Reset</button>
 
 <script>
-    $('button').click(function () {
-        alert('alert');
-        console.log('test');
-        });
+    let isPaused = true;
+    let intervalId;
+    let clockService = new ClockService();
+
+    clockService.setDefaultTime()
+    $('#clock').html(clockService.getSeconds());
+
+    function onClickStartPause() {
+        if (isPaused) {
+            intervalId = setInterval(decrease, 1000);
+            $('#start-pause').html('Pause');
+        } else{
+            clearInterval(intervalId);
+            $('#start-pause').html('Start');
+        }
+        isPaused = !isPaused;
+    }
+
+    function resetClock(){
+        clockService.setDefaultTime();
+        $('#clock').html(clockService.getSeconds());
+    }
+
+    function decrease(){
+        clockService.decreaseTime();
+        $('#clock').html(clockService.getSeconds());
+        if (clockService.getSeconds() === 0) {
+            isPaused = true;
+            clearInterval(intervalId);
+            $('#start-pause').html('Start');
+            let audio = new Audio('sounds/TF011.WAV');
+            audio.play();
+        }
+    }
 </script>
 </body>
 </html>
